@@ -15,9 +15,9 @@ namespace CityPowerAndLight.Utils
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="action"/> or <paramref name="operationName"/> is <c>null</c>.</exception>
         public static void HandleAction(Action action, string operationName)
         {
-            if (action == null) 
+            if (action == null)
                 throw new ArgumentNullException(nameof(action), "Action cannot be null.");
-            if (string.IsNullOrWhiteSpace(operationName)) 
+            if (string.IsNullOrWhiteSpace(operationName))
                 throw new ArgumentNullException(nameof(operationName), "Operation name cannot be null or empty.");
 
             try
@@ -46,9 +46,9 @@ namespace CityPowerAndLight.Utils
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="func"/> or <paramref name="operationName"/> is <c>null</c>.</exception>
         public static T HandleFunction<T>(Func<T> func, string operationName, T defaultValue = default) where T : struct
         {
-            if (func == null) 
+            if (func == null)
                 throw new ArgumentNullException(nameof(func), "Function cannot be null.");
-            if (string.IsNullOrWhiteSpace(operationName)) 
+            if (string.IsNullOrWhiteSpace(operationName))
                 throw new ArgumentNullException(nameof(operationName), "Operation name cannot be null or empty.");
 
             try
@@ -63,6 +63,7 @@ namespace CityPowerAndLight.Utils
             {
                 Console.WriteLine($"Unexpected error during {operationName}: {ex.Message}");
             }
+
             return defaultValue;
         }
     }

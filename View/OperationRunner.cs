@@ -20,10 +20,13 @@ namespace CityPowerAndLight.View
             // 1. Create a New Account
             ConsoleFormatter.PrintHeader("1. Create a New Account");
             Guid newAccountId = ErrorHandler.HandleFunction(
-                () => accountController.Create("TestCreate", "TestCreate@outlook.com", "555-123-4567"),
+                () => accountController.Create("TestCreate", "TestCreate@outlook.com", "555-123-4567", "Test City",
+                    null),
                 "Create Account"
             );
-            Console.WriteLine(newAccountId != Guid.Empty ? $"Created Account ID: {newAccountId}" : "Account creation failed.");
+            Console.WriteLine(newAccountId != Guid.Empty
+                ? $"Created Account ID: {newAccountId}"
+                : "Account creation failed.");
             Console.WriteLine();
 
             // 2. Read All Accounts
@@ -34,7 +37,8 @@ namespace CityPowerAndLight.View
             // 3. Update the Newly Created Account
             ConsoleFormatter.PrintHeader("3. Update the Newly Created Account");
             ErrorHandler.HandleAction(
-                () => accountController.Update(newAccountId, "UpdatedName", "UpdatedEmail@outlook.com", "555-987-6543"),
+                () => accountController.Update(newAccountId, "UpdatedName", "UpdatedEmail@outlook.com", "555-987-6543",
+                    "Updated City", (Guid?)null),
                 "Update Account"
             );
             Console.WriteLine($"Updated Account ID: {newAccountId}");
@@ -67,10 +71,12 @@ namespace CityPowerAndLight.View
             // 1. Create a New Contact
             ConsoleFormatter.PrintHeader("1. Create a New Contact");
             Guid newContactId = ErrorHandler.HandleFunction(
-                () => contactController.Create("John", "Doe", "Acme Corp", "john.doe@outlook.com"),
+                () => contactController.Create("John", "Doe", "Acme Corp", "john.doe@outlook.com", "123-456-7890"),
                 "Create Contact"
             );
-            Console.WriteLine(newContactId != Guid.Empty ? $"Created Contact ID: {newContactId}" : "Contact creation failed.");
+            Console.WriteLine(newContactId != Guid.Empty
+                ? $"Created Contact ID: {newContactId}"
+                : "Contact creation failed.");
             Console.WriteLine();
 
             // 2. Read All Contacts
@@ -81,7 +87,8 @@ namespace CityPowerAndLight.View
             // 3. Update the Newly Created Contact
             ConsoleFormatter.PrintHeader("3. Update the Newly Created Contact");
             ErrorHandler.HandleAction(
-                () => contactController.Update(newContactId, "Jane", "Doe", "Acme Inc", "jane.doe@outlook.com"),
+                () => contactController.Update(newContactId, "Jane", "Doe", "Acme Inc", "jane.doe@outlook.com",
+                    "987-654-3210"),
                 "Update Contact"
             );
             Console.WriteLine($"Updated Contact ID: {newContactId}");
@@ -104,6 +111,7 @@ namespace CityPowerAndLight.View
             Console.WriteLine("========================================");
         }
 
+
         /// <summary>
         /// Runs the operations for managing cases, including creating, reading, updating, and deleting a case.
         /// It also demonstrates how to link a case to a contact. Each operation is logged, and errors are handled through the <see cref="ErrorHandler"/>.
@@ -112,53 +120,64 @@ namespace CityPowerAndLight.View
         /// <param name="contactController">An instance of the <see cref="ContactController"/> used to manage contacts.</param>
         public static void RunCaseOperations(CaseController caseController, ContactController contactController)
         {
-            // Create a Contact for the Case
-            Guid newContactId = ErrorHandler.HandleFunction(
-                () => contactController.Create("Case", "Customer", "CC", "cc@outlook.com"),
-                "Create Contact for Case"
-            );
+            try
+            {
+                // 1. Create a Contact for the Case
+                ConsoleFormatter.PrintHeader("Creating a Contact for the Case");
+                Guid newContactId = ErrorHandler.HandleFunction(
+                    () => contactController.Create("Case", "Customer", "CC", "cc@outlook.com",
+                        "123-456-7890"), // Added phone number as 5th argument
+                    "Create Contact for Case"
+                );
+                Console.WriteLine();
 
-            // 1. Create a New Case
-            ConsoleFormatter.PrintHeader("1. Create a New Case");
-            Guid newCaseId = ErrorHandler.HandleFunction(
-                () => caseController.Create("TestCase", "This is a test case", newContactId),
-                "Create Case"
-            );
-            Console.WriteLine();
+                // 2. Create a New Case
+                ConsoleFormatter.PrintHeader("1. Create a New Case");
+                Guid newCaseId = ErrorHandler.HandleFunction(
+                    () => caseController.Create("TestCase", "This is a test case",
+                        newContactId), // Pass newContactId as customerId
+                    "Create Case"
+                );
+                Console.WriteLine($"Created Case ID: {newCaseId}\n");
 
-            // 2. Read All Cases
-            ConsoleFormatter.PrintHeader("2. Read All Cases");
-            ErrorHandler.HandleAction(() => caseController.ReadAll(), "Read All Cases");
-            Console.WriteLine();
+                // 3. Read All Cases
+                ConsoleFormatter.PrintHeader("2. Read All Cases");
+                ErrorHandler.HandleAction(() => caseController.ReadAll(), "Read All Cases");
+                Console.WriteLine();
 
-            // 3. Update the Newly Created Case
-            ConsoleFormatter.PrintHeader("3. Update the Newly Created Case");
-            ErrorHandler.HandleAction(
-                () => caseController.Update(newCaseId, "Updated TestCase", "Updated description", incident_statuscode.InProgress, incident_prioritycode.Low),
-                "Update Case"
-            );
-            Console.WriteLine($"Updated Case ID: {newCaseId}");
-            Console.WriteLine();
+                // 4. Update the Newly Created Case
+                ConsoleFormatter.PrintHeader("3. Update the Newly Created Case");
+                ErrorHandler.HandleAction(
+                    () => caseController.Update(newCaseId, "Updated TestCase", "Updated description",
+                        incident_statuscode.InProgress, incident_prioritycode.Low),
+                    "Update Case"
+                );
+                Console.WriteLine($"Updated Case ID: {newCaseId}\n");
 
-            // 4. Read All Cases After Update
-            ConsoleFormatter.PrintHeader("4. Read All Cases After Update");
-            ErrorHandler.HandleAction(() => caseController.ReadAll(), "Read All Cases After Update");
-            Console.WriteLine();
+                // 5. Read All Cases After Update
+                ConsoleFormatter.PrintHeader("4. Read All Cases After Update");
+                ErrorHandler.HandleAction(() => caseController.ReadAll(), "Read All Cases After Update");
+                Console.WriteLine();
 
-            // 5. Delete the Case
-            ConsoleFormatter.PrintHeader("5. Delete the Case");
-            ErrorHandler.HandleAction(() => caseController.Delete(newCaseId), "Delete Case");
-            Console.WriteLine($"Deleted Case ID: {newCaseId}");
-            Console.WriteLine();
+                // 6. Delete the Case
+                ConsoleFormatter.PrintHeader("5. Delete the Case");
+                ErrorHandler.HandleAction(() => caseController.Delete(newCaseId), "Delete Case");
+                Console.WriteLine($"Deleted Case ID: {newCaseId}\n");
 
-            // Delete Associated Contact
-            ErrorHandler.HandleAction(() => contactController.Delete(newContactId), "Delete Contact");
-            Console.WriteLine();
+                // 7. Delete Associated Contact
+                ConsoleFormatter.PrintHeader("Deleting Associated Contact");
+                ErrorHandler.HandleAction(() => contactController.Delete(newContactId), "Delete Contact");
+                Console.WriteLine();
 
-            // 6. Read All Cases After Deletion
-            ConsoleFormatter.PrintHeader("6. Read All Cases After Deletion");
-            ErrorHandler.HandleAction(() => caseController.ReadAll(), "Read All Cases After Deletion");
-            Console.WriteLine("========================================");
+                // 8. Read All Cases After Deletion
+                ConsoleFormatter.PrintHeader("6. Read All Cases After Deletion");
+                ErrorHandler.HandleAction(() => caseController.ReadAll(), "Read All Cases After Deletion");
+                Console.WriteLine("========================================");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred during case operations: {ex.Message}");
+            }
         }
     }
 }

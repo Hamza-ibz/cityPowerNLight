@@ -20,8 +20,12 @@ namespace CityPowerAndLight.Service
         /// <exception cref="ArgumentNullException">Thrown when either <paramref name="organisationService"/> or <paramref name="entityLogicalName"/> is null.</exception>
         public EntityService(IOrganizationService organisationService, string entityLogicalName)
         {
-            _organisationService = organisationService ?? throw new ArgumentNullException(nameof(organisationService), "Organisation service cannot be null.");
-            _entityLogicalName = entityLogicalName ?? throw new ArgumentNullException(nameof(entityLogicalName), "Entity logical name cannot be null.");
+            _organisationService = organisationService ??
+                                   throw new ArgumentNullException(nameof(organisationService),
+                                       "Organisation service cannot be null.");
+            _entityLogicalName = entityLogicalName ??
+                                 throw new ArgumentNullException(nameof(entityLogicalName),
+                                     "Entity logical name cannot be null.");
         }
 
         /// <summary>
@@ -76,6 +80,7 @@ namespace CityPowerAndLight.Service
                         T entity = (T)record;
                         allRecords.Add(entity);
                     }
+
                     query.PageInfo.PageNumber++;
                 } while (results.MoreRecords);
 

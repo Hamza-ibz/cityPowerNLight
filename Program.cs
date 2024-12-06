@@ -3,7 +3,7 @@
     using Utils;
     using View;
     using Service;
-    
+
     class Program
     {
         /// <summary>

@@ -2,6 +2,7 @@ using CityPowerAndLight.Model;
 using CityPowerAndLight.Service;
 using CityPowerAndLight.Utils;
 using Microsoft.Xrm.Sdk;
+using System;
 
 namespace CityPowerAndLight.Controller
 {
@@ -22,7 +23,7 @@ namespace CityPowerAndLight.Controller
         }
 
         /// <summary>
-        /// Reads all incidents (cases) and prints them in a tabular format.
+        /// Reads all incidents and prints them in a table format.
         /// </summary>
         internal void ReadAll()
         {
@@ -31,8 +32,11 @@ namespace CityPowerAndLight.Controller
                 var incidents = _caseService.GetAll();
 
                 // Define columns and their widths
-                string[] headers = { "Id", "Title", "Customer Name", "Priority", "Case Number", "Status" };
-                int[] columnWidths = { 40, 62, 35, 10, 20, 15 };
+                string[] headers =
+                {
+                    "ID", "Case Title", "Case Number", "Priority", "Origin", "Customer", "Status Reason", "Created On"
+                };
+                int[] columnWidths = { 40, 62, 20, 15, 15, 35, 20, 20 };
 
                 // Print headers
                 ConsoleFormatter.PrintTableHeader(headers, columnWidths);
@@ -40,13 +44,16 @@ namespace CityPowerAndLight.Controller
                 // Print the incident details
                 foreach (Incident incident in incidents)
                 {
-                    string[] rowData = {
+                    string[] rowData =
+                    {
                         incident.Id.ToString(),
-                        incident.Title ?? "N/A",
-                        incident.CustomerId?.Name ?? "N/A",
-                        incident.PriorityCode?.ToString() ?? "N/A",
-                        incident.TicketNumber,
-                        incident.StatusCode?.ToString() ?? "N/A"
+                        incident.Title ?? "N/A", // Case Title
+                        incident.TicketNumber ?? "N/A", // Case Number
+                        incident.PriorityCode?.ToString() ?? "N/A", // Priority
+                        incident.CaseOriginCode?.ToString() ?? "N/A", // Origin
+                        incident.CustomerId?.Name ?? "N/A", // Customer
+                        incident.StatusCode?.ToString() ?? "N/A", // Status Reason
+                        incident.CreatedOn?.ToString("yyyy-MM-dd") ?? "N/A" // Created On
                     };
 
                     ConsoleFormatter.PrintTableRow(rowData, columnWidths);
@@ -59,12 +66,12 @@ namespace CityPowerAndLight.Controller
         }
 
         /// <summary>
-        /// Creates a new incident (case) with the specified title, description, and customer ID.
+        /// Creates a new incident with the specified title, description, and customer ID.
         /// </summary>
-        /// <param name="title">The title of the incident (case).</param>
-        /// <param name="description">The description of the incident (case).</param>
-        /// <param name="customerId">The unique identifier (GUID) of the customer associated with the incident (case).</param>
-        /// <returns>The unique identifier (GUID) of the created incident (case).</returns>
+        /// <param name="title">The title of the incident.</param>
+        /// <param name="description">The description of the incident.</param>
+        /// <param name="customerId">The unique identifier (GUID) of the customer associated with the incident.</param>
+        /// <returns>The unique identifier (GUID) of the created incident.</returns>
         /// <exception cref="ArgumentException">Thrown when any input parameter is invalid.</exception>
         internal Guid Create(string title, string description, Guid customerId)
         {
@@ -96,7 +103,7 @@ namespace CityPowerAndLight.Controller
             catch (ArgumentException ex)
             {
                 Console.WriteLine($"Input validation error: {ex.Message}");
-                throw;  // Re-throw the exception for further handling if needed
+                throw; // Re-throw the exception for further handling if needed
             }
             catch (Exception ex)
             {
@@ -106,15 +113,14 @@ namespace CityPowerAndLight.Controller
         }
 
         /// <summary>
-        /// Deletes an incident (case) by its unique identifier (GUID).
+        /// Deletes an incident by its unique identifier (GUID).
         /// </summary>
-        /// <param name="caseId">The unique identifier (GUID) of the incident (case) to be deleted.</param>
+        /// <param name="caseId">The unique identifier (GUID) of the incident to be deleted.</param>
         /// <exception cref="ArgumentException">Thrown if the provided case ID is invalid.</exception>
         internal void Delete(Guid caseId)
         {
             try
             {
-                // Validate input
                 if (caseId == Guid.Empty)
                     throw new ArgumentException("Invalid case ID.");
 
@@ -132,15 +138,16 @@ namespace CityPowerAndLight.Controller
         }
 
         /// <summary>
-        /// Updates an existing incident (case) with the specified title, description, status, and priority.
+        /// Updates an existing incident with the specified title, description, status, and priority.
         /// </summary>
-        /// <param name="caseId">The unique identifier (GUID) of the incident (case) to be updated.</param>
-        /// <param name="title">The updated title of the incident (case).</param>
-        /// <param name="description">The updated description of the incident (case).</param>
-        /// <param name="statusCode">The updated status of the incident (case).</param>
-        /// <param name="priorityCode">The updated priority of the incident (case).</param>
+        /// <param name="caseId">The unique identifier (GUID) of the incident to be updated.</param>
+        /// <param name="title">The updated title of the incident.</param>
+        /// <param name="description">The updated description of the incident.</param>
+        /// <param name="statusCode">The updated status of the incident.</param>
+        /// <param name="priorityCode">The updated priority of the incident.</param>
         /// <exception cref="ArgumentException">Thrown if any of the input parameters are invalid.</exception>
-        internal void Update(Guid caseId, string title, string description, incident_statuscode statusCode, incident_prioritycode priorityCode)
+        internal void Update(Guid caseId, string title, string description, incident_statuscode statusCode,
+            incident_prioritycode priorityCode)
         {
             try
             {
@@ -176,11 +183,11 @@ namespace CityPowerAndLight.Controller
         }
 
         /// <summary>
-        /// Overloaded method to update an existing incident (case) with the specified title and status.
+        /// Overloaded method to update an existing incident with the specified title and status.
         /// </summary>
-        /// <param name="caseId">The unique identifier (GUID) of the incident (case) to be updated.</param>
-        /// <param name="title">The updated title of the incident (case).</param>
-        /// <param name="statusCode">The updated status of the incident (case).</param>
+        /// <param name="caseId">The unique identifier (GUID) of the incident to be updated.</param>
+        /// <param name="title">The updated title of the incident.</param>
+        /// <param name="statusCode">The updated status of the incident.</param>
         /// <exception cref="ArgumentException">Thrown if any of the input parameters are invalid.</exception>
         internal void Update(Guid caseId, string title, incident_statuscode statusCode)
         {

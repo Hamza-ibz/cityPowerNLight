@@ -23,9 +23,6 @@ namespace CityPowerAndLight.Controller
         /// <summary>
         /// Reads and displays all contacts.
         /// </summary>
-        /// <remarks>
-        /// This method retrieves all contacts from the data source and prints their details to the console.
-        /// </remarks>
         internal void ReadAll()
         {
             try
@@ -33,8 +30,8 @@ namespace CityPowerAndLight.Controller
                 var contacts = _contactService.GetAll();
 
                 // Define columns and their widths
-                string[] headers = { "Id", "Full Name", "Company Name", "Email Address" };
-                int[] columnWidths = { 40, 30, 30, 35 };
+                string[] headers = { "Id", "Full Name", "Email Address", "Company Name", "Business Phone" };
+                int[] columnWidths = { 40, 30, 35, 30, 20 };
 
                 // Print headers
                 ConsoleFormatter.PrintTableHeader(headers, columnWidths);
@@ -42,11 +39,13 @@ namespace CityPowerAndLight.Controller
                 // Print the contact details
                 foreach (Contact contact in contacts)
                 {
-                    string[] rowData = {
+                    string[] rowData =
+                    {
                         contact.Id.ToString(),
                         $"{contact.FirstName} {contact.LastName}".Trim(),
+                        contact.EMailAddress1 ?? "N/A",
                         contact.Company ?? "N/A",
-                        contact.EMailAddress1 ?? "N/A"
+                        contact.MobilePhone ?? "N/A"
                     };
 
                     ConsoleFormatter.PrintTableRow(rowData, columnWidths);
@@ -65,9 +64,9 @@ namespace CityPowerAndLight.Controller
         /// <param name="lastName">The last name of the contact.</param>
         /// <param name="company">The company name of the contact.</param>
         /// <param name="email">The email address of the contact.</param>
+        /// <param name="businessPhone">The business phone number of the contact.</param>
         /// <returns>The ID of the newly created contact.</returns>
-        /// <exception cref="ArgumentException">Thrown when any of the input parameters are invalid.</exception>
-        internal Guid Create(string firstName, string lastName, string company, string email /*, string mobilePhone */)
+        internal Guid Create(string firstName, string lastName, string company, string email, string businessPhone)
         {
             try
             {
@@ -87,7 +86,7 @@ namespace CityPowerAndLight.Controller
                     LastName = lastName,
                     Company = company,
                     EMailAddress1 = email,
-                    // MobilePhone = mobilePhone, // Commented out
+                    MobilePhone = businessPhone
                 };
 
                 Guid contactId = _contactService.Create(newContact);
@@ -97,7 +96,7 @@ namespace CityPowerAndLight.Controller
             catch (ArgumentException ex)
             {
                 Console.WriteLine($"Input validation error: {ex.Message}");
-                throw;  // Re-throw the exception for further handling if needed
+                throw;
             }
             catch (Exception ex)
             {
@@ -110,7 +109,6 @@ namespace CityPowerAndLight.Controller
         /// Deletes a contact by ID.
         /// </summary>
         /// <param name="contactId">The ID of the contact to delete.</param>
-        /// <exception cref="ArgumentException">Thrown when the contact ID is invalid.</exception>
         internal void Delete(Guid contactId)
         {
             try
@@ -140,8 +138,9 @@ namespace CityPowerAndLight.Controller
         /// <param name="lastName">The last name of the contact.</param>
         /// <param name="company">The company name of the contact.</param>
         /// <param name="email">The email address of the contact.</param>
-        /// <exception cref="ArgumentException">Thrown when any of the input parameters are invalid.</exception>
-        internal void Update(Guid contactId, string firstName, string lastName, string company, string email /*, string mobilePhone */)
+        /// <param name="businessPhone">The business phone of the contact.</param>
+        internal void Update(Guid contactId, string firstName, string lastName, string company, string email,
+            string businessPhone)
         {
             try
             {
@@ -164,7 +163,7 @@ namespace CityPowerAndLight.Controller
                     LastName = lastName,
                     Company = company,
                     EMailAddress1 = email,
-                    // MobilePhone = mobilePhone, // Commented out
+                    MobilePhone = businessPhone
                 };
 
                 _contactService.Update(updatedContact);
@@ -185,7 +184,6 @@ namespace CityPowerAndLight.Controller
         /// </summary>
         /// <param name="contactId">The ID of the contact to update.</param>
         /// <param name="email">The new email address of the contact.</param>
-        /// <exception cref="ArgumentException">Thrown when the contact ID or email is invalid.</exception>
         internal void Update(Guid contactId, string email)
         {
             try
