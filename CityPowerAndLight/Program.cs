@@ -15,6 +15,8 @@
         {
             // Initialize environment variables
             InitializationHelper.InitializeEnvironment();
+            
+            // Console.WriteLine(Environment.GetEnvironmentVariable("SERVICE_URL"));
 
             // Connect to the CRM service using environment variables
             var service = OrganisationServiceConnector.Connect(
@@ -22,12 +24,12 @@
                 Environment.GetEnvironmentVariable("APP_ID") ?? "",
                 Environment.GetEnvironmentVariable("CLIENT_SECRET") ?? ""
             );
-
+            
             // Initialize controllers
             var accountController = InitializationHelper.InitializeAccountController(service);
             var contactController = InitializationHelper.InitializeContactController(service);
             var caseController = InitializationHelper.InitializeCaseController(service);
-
+            
             // Run operations
             OperationRunner.RunAccountOperations(accountController);
             OperationRunner.RunContactOperations(contactController);

@@ -20,7 +20,7 @@ namespace CityPowerAndLight.View
             // 1. Create a New Account
             ConsoleFormatter.PrintHeader("1. Create a New Account");
             Guid newAccountId = ErrorHandler.HandleFunction(
-                () => accountController.Create("TestCreate", "TestCreate@outlook.com", "555-123-4567", "Test City",
+                () => accountController.Create("Test Create", "TestCreate@outlook.com", "555-123-4567", "Test City",
                     null),
                 "Create Account"
             );
@@ -38,7 +38,7 @@ namespace CityPowerAndLight.View
             ConsoleFormatter.PrintHeader("3. Update the Newly Created Account");
             ErrorHandler.HandleAction(
                 () => accountController.Update(newAccountId, "UpdatedName", "UpdatedEmail@outlook.com", "555-987-6543",
-                    "Updated City", (Guid?)null),
+                    "Updated City", null),
                 "Update Account"
             );
             Console.WriteLine($"Updated Account ID: {newAccountId}");
